@@ -6,6 +6,8 @@ import Constants.FINAL_DATA_PATH
 import Constants.PARTITION_RATIO
 import Constants.NUM_CLUSTERS
 import Constants.NUM_ITERATIONS
+import java.io.PrintWriter
+
 
 object Clusterer {
   def main(args: Array[String]): Unit = {
@@ -42,6 +44,18 @@ object Clusterer {
 
     println("train starts -> ")
     val clusters = KMeans.train(trainRDD, NUM_CLUSTERS, NUM_ITERATIONS)
+
+    println("PRINT PREDICTION -> ")
+
+    val vectorsAndClusterIdx = trainRDD.map{ point =>
+      val prediction = clusters.predict(point)
+      (point.toString, prediction)
+    }
+
+    new PrintWriter("./data/vector-cluster-ids") {
+      vectorsAndClusterIdx.collect().foreach(pair => println(pair.toString())); close
+    }
+
     sc.stop()
 
     println("cluster-centers -> ")
