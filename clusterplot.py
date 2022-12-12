@@ -22,4 +22,4 @@ cluster_ids = [int(i) for i in cluster_ids]
 
 ax.scatter(x, y, c=cluster_ids, cmap='viridis', s=0.5)
 
-plt.savefig('cluster_graph.png')
+plt.savefig('./data/cluster_graph.png')
