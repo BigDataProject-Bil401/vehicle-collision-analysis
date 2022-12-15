@@ -59,6 +59,8 @@ object Clusterer {
     sc.stop()
 
     println("cluster-centers -> ")
-    clusters.clusterCenters.foreach(println)
+    new PrintWriter("./data/cluster-centroids") {
+      clusters.clusterCenters.foreach(println); close
+    }
   }
 }
