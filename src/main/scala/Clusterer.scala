@@ -7,8 +7,8 @@ import Constants.PARTITION_RATIO
 import Constants.NUM_CLUSTERS
 import Constants.NUM_ITERATIONS
 import org.apache.spark.sql.functions.col
-
 import scala.collection.immutable.ListMap
+import java.io.PrintWriter
 
 object Clusterer {
   def main(args: Array[String]): Unit = {
@@ -56,6 +56,17 @@ object Clusterer {
 
     println("train starts -> ")
     val clusters = KMeans.train(trainRDD, NUM_CLUSTERS, NUM_ITERATIONS)
+
+    println("PRINT PREDICTION -> ")
+
+    val vectorsAndClusterIdx = trainRDD.map{ point =>
+      val prediction = clusters.predict(point)
+      (point.toString, prediction)
+    }
+
+    new PrintWriter("./data/vector-cluster-ids") {
+      vectorsAndClusterIdx.collect().foreach(pair => println(pair.toString())); close
+    }
 
     val clustersRDD = clusters.predict(trainRDD)
     val stateClustersRDD = partitionRDD.map(s => (s.get(2), (s.get(18), s.get(19), s.get(20), s.get(21), s.get(22)), s.get(1))).zip(clustersRDD)
@@ -129,5 +140,8 @@ object Clusterer {
 
     println("\ncluster-centers -> ")
     clusters.clusterCenters.foreach(println)
+    new PrintWriter("./data/cluster-centroids") {
+      clusters.clusterCenters.foreach(println); close
+    }
   }
 }
