@@ -27,26 +27,26 @@ object Clusterer {
     val null_filtered_df = base_df.filter(
       base_df("LATITUDE").isNotNull && base_df("LONGITUDE").isNotNull
     )
-    val final_filtered_df = null_filtered_df.filter(
+    val loc_filtered_df = null_filtered_df.filter(
       row => row.get(4).toString.toDouble != 0 && row.get(5).toString.toDouble != 0
     )
 
-    val final_final_filtered_df = final_filtered_df.filter(
+    val state_filtered_df = loc_filtered_df.filter(
       row => row.get(2) != null
     )
 
-    val final_final_final_filtered_df = final_final_filtered_df.filter(
+    val final_filtered_df = state_filtered_df.filter(
       row => (row.get(10) != null && row.get(11) != null)
     )
 
-    println("11111", final_final_final_filtered_df.show(5))
-    println("22222", final_final_final_filtered_df.sort(col("CRASH DATE").asc).show(5))
-    println("33333", final_final_final_filtered_df.sort(col("CRASH DATE").desc).show(5))
+    println("11111", final_filtered_df.show(5))
+    println("22222", final_filtered_df.sort(col("CRASH DATE").asc).show(5))
+    println("33333", final_filtered_df.sort(col("CRASH DATE").desc).show(5))
 
-    println("df count -> ", final_final_final_filtered_df.count(),
-      " ---- df partition count -> ", final_final_final_filtered_df.count() * PARTITION_RATIO)
+    println("df count -> ", final_filtered_df.count(),
+      " ---- df partition count -> ", final_filtered_df.count() * PARTITION_RATIO)
 
-    val partitionRDD = final_final_final_filtered_df.rdd
+    val partitionRDD = final_filtered_df.rdd
       .sample(withReplacement = false, fraction = PARTITION_RATIO)
       .cache()
 
